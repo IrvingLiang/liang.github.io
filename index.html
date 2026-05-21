@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>家族族谱 - 交互式家谱管理系统</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Ma+Shan+Zheng&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary: #8B4513;
@@ -19,15 +22,146 @@
         body {
             font-family: 'Noto Serif SC', serif;
             background-color: var(--bg-paper);
-            background-image: 
+            background-image:
                 radial-gradient(circle at 20% 50%, rgba(139, 69, 19, 0.03) 0%, transparent 50%),
                 radial-gradient(circle at 80% 80%, rgba(205, 133, 63, 0.03) 0%, transparent 50%),
                 url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%239C92AC' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
             overflow-x: auto;
+            overflow-y: auto;
         }
 
         .title-font {
             font-family: 'Ma Shan Zheng', cursive;
+        }
+
+        /* 右侧边栏样式 */
+        .info-sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 380px;
+            height: 100vh;
+            background: linear-gradient(135deg, #FFF9F0 0%, #FFF5E6 100%);
+            border-left: 3px solid var(--primary);
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+            z-index: 200;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        .info-sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            right: 20px;
+            top: 80px;
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 201;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s;
+            font-size: 24px;
+            border: none;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--secondary);
+            transform: scale(1.05);
+        }
+
+        .sidebar-content {
+            padding: 24px 20px;
+        }
+
+        .section-title {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 22px;
+            color: var(--primary);
+            border-left: 4px solid var(--accent);
+            padding-left: 12px;
+            margin-bottom: 16px;
+            margin-top: 24px;
+        }
+
+        .section-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .family-intro {
+            background: rgba(205, 133, 63, 0.08);
+            padding: 16px;
+            border-radius: 12px;
+            line-height: 1.8;
+            color: #4A3B2C;
+            font-size: 14px;
+        }
+
+        .family-intro-text {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .timeline-item {
+            background: white;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--accent);
+            transition: all 0.3s;
+        }
+
+        .timeline-item:hover {
+            box-shadow: 0 4px 16px rgba(139, 69, 19, 0.1);
+            transform: translateX(-4px);
+        }
+
+        .timeline-year {
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            font-size: 15px;
+            color: #2C1810;
+            margin-bottom: 6px;
+        }
+
+        .timeline-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .empty-timeline {
+            text-align: center;
+            padding: 30px 20px;
+            color: #999;
+            font-size: 13px;
+        }
+
+        /* 主内容区域调整 */
+        .main-wrapper {
+            transition: margin-right 0.3s ease;
+        }
+
+        .main-wrapper.sidebar-open {
+            margin-right: 380px;
         }
 
         /* Tree CSS */
@@ -36,6 +170,9 @@
             min-width: fit-content;
             padding: 40px;
             transition: transform 0.2s ease;
+            display: flex;
+            justify-content: center;
+            min-height: calc(100vh - 80px);
         }
 
         .tree ul {
@@ -55,8 +192,8 @@
             transition: all 0.5s;
         }
 
-        /* Connectors */
-        .tree li::before, .tree li::after {
+        .tree li::before,
+        .tree li::after {
             content: '';
             position: absolute;
             top: 0;
@@ -72,7 +209,8 @@
             border-left: 2px solid var(--line-color);
         }
 
-        .tree li:only-child::after, .tree li:only-child::before {
+        .tree li:only-child::after,
+        .tree li:only-child::before {
             display: none;
         }
 
@@ -80,7 +218,8 @@
             padding-top: 0;
         }
 
-        .tree li:first-child::before, .tree li:last-child::after {
+        .tree li:first-child::before,
+        .tree li:last-child::after {
             border: 0 none;
         }
 
@@ -103,7 +242,6 @@
             height: 20px;
         }
 
-        /* Loading State */
         .loading-state {
             text-align: center;
             padding: 80px 20px;
@@ -121,10 +259,11 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
-        /* Node Card */
         .node-card {
             display: inline-block;
             padding: 12px;
@@ -244,7 +383,6 @@
             color: white;
         }
 
-        /* Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -304,7 +442,9 @@
             font-size: 14px;
         }
 
-        .form-input, .form-select {
+        .form-input,
+        .form-select,
+        .form-textarea {
             width: 100%;
             padding: 10px 14px;
             border: 2px solid #E2E8F0;
@@ -315,7 +455,14 @@
             background: white;
         }
 
-        .form-input:focus, .form-select:focus {
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
             outline: none;
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(205, 133, 63, 0.1);
@@ -434,7 +581,6 @@
             color: #B83280;
         }
 
-        /* Decorative elements */
         .corner-decoration {
             position: absolute;
             width: 40px;
@@ -443,12 +589,34 @@
             opacity: 0.3;
         }
 
-        .corner-tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
-        .corner-tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
-        .corner-bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
-        .corner-br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+        .corner-tl {
+            top: -2px;
+            left: -2px;
+            border-right: none;
+            border-bottom: none;
+        }
 
-        /* Scrollbar styling */
+        .corner-tr {
+            top: -2px;
+            right: -2px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .corner-bl {
+            bottom: -2px;
+            left: -2px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .corner-br {
+            bottom: -2px;
+            right: -2px;
+            border-left: none;
+            border-top: none;
+        }
+
         ::-webkit-scrollbar {
             width: 10px;
             height: 10px;
@@ -489,7 +657,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.3s;
         }
 
@@ -510,7 +678,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
         .stat-item {
@@ -535,53 +703,65 @@
             margin-top: 2px;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #999;
-        }
-
-        .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .tree li {
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        /* Error message */
-        .error-message {
-            text-align: center;
-            padding: 60px 20px;
-            color: #d32f2f;
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
             .tree {
                 padding: 20px 10px;
             }
+
             .node-card {
                 min-width: 120px;
                 padding: 8px;
             }
+
             .node-avatar {
                 width: 48px;
                 height: 48px;
             }
+
             .modal-content {
                 padding: 20px;
+            }
+
+            .info-sidebar {
+                width: 100%;
+                max-width: 320px;
+            }
+
+            .main-wrapper.sidebar-open {
+                margin-right: 320px;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
             }
         }
     </style>
 </head>
+
 <body>
 
     <!-- Stats Bar -->
@@ -610,37 +790,63 @@
         </div>
     </div>
 
-    <!-- Tree Container -->
-    <div class="tree" id="treeContainer">
-        <div class="loading-state" id="loadingState">
-            <div class="loading-spinner"></div>
-            <p>正在加载族谱数据...</p>
+    <!-- 主内容包装器 -->
+    <div class="main-wrapper" id="mainWrapper">
+        <!-- Tree Container -->
+        <div class="tree" id="treeContainer">
+            <div class="loading-state" id="loadingState">
+                <div class="loading-spinner"></div>
+                <p>正在加载族谱数据...</p>
+            </div>
+            <ul id="treeRoot" style="display: none;"></ul>
         </div>
-        <ul id="treeRoot" style="display: none;"></ul>
     </div>
 
-    <!-- Controls -->
+    <!-- 右侧信息栏开关按钮 -->
+    <button class="sidebar-toggle" id="sidebarToggle" title="家族信息">📜</button>
+
+    <!-- 右侧信息栏 -->
+    <div class="info-sidebar" id="infoSidebar">
+        <div class="sidebar-content">
+            <!-- 家族简介 -->
+            <div class="section-title">家族简介</div>
+            <div class="family-intro">
+                <div class="family-intro-text" id="familyIntroText">
+                    梁家村地处彬县龙高镇以北1.5公里处。村民以梁姓为主。梁家村居塬面地带，到明朝末年，这里尚属荒野。明崇祯十七年、清顺治元年（公元1644年）清军入关，明王朝彻底灭亡，李自成义军形势逆转，黄河流域民心惶惶。当时在明朝军队中担任下级军官的一位梁姓军人，率家族40余人几经辗转，定居于此。这位梁姓军人安顿好族人后，重新踏入反清行列，从此不知所终。其族人在此繁衍生息，世代农耕，梁家村名由此而来。<br><br>
+                    梁家村是一个文化底蕴丰厚、人才辈出的村落。曾有多人考上大学，位列全县第一。而在农村依然面朝黄土背朝天的普通农民中，能够出口成章的乡土秀才也不乏其人。这些人的乐观和才智无疑深深地影响着大家，书法艺术在村子里也有浓厚的气息，已故的梁经武老先生曾是彬县书法协会会员，其书法遗风被其弟子所继承。<br><br>
+                    近代以来，家族成员遍布海内外，在各行各业均有建树。每逢佳节，族人齐聚祠堂，共叙亲情，传承家风。
+                </div>
+            </div>
+
+            <!-- 重大事件 -->
+            <div class="section-title" style="margin-top: 24px;">重大事件</div>
+            <div id="timelineContainer"></div>
+        </div>
+    </div>
+
+    <!--  Controls -->
     <div class="controls">
         <button class="control-btn" id="zoomInBtn" title="放大" style="display: none;">+</button>
         <button class="control-btn" id="zoomOutBtn" title="缩小" style="display: none;">-</button>
         <button class="control-btn" id="resetZoomBtn" title="重置" style="display: none;">⟲</button>
         <button class="control-btn" id="exportBtn" title="导出数据" style="display: none;">💾</button>
+        <button class="control-btn" id="centerBtn" title="居中显示" style="display: none;">◎</button>
     </div>
 
-    <!-- Modal -->
+    <!-- 成员编辑 Modal -->
     <div class="modal-overlay" id="modal">
         <div class="modal-content">
             <div class="corner-decoration corner-tl"></div>
             <div class="corner-decoration corner-tr"></div>
             <div class="corner-decoration corner-bl"></div>
             <div class="corner-decoration corner-br"></div>
-            
+
             <h2 class="modal-title" id="modalTitle">编辑成员</h2>
-            
+
             <form id="memberForm">
                 <input type="hidden" id="memberId">
                 <input type="hidden" id="parentId">
-                
+
                 <div class="avatar-upload" onclick="document.getElementById('avatarInput').click()">
                     <img id="avatarPreview" style="display: none;">
                     <div class="avatar-placeholder" id="avatarPlaceholder">
@@ -648,13 +854,14 @@
                         <div>点击上传头像</div>
                     </div>
                 </div>
-                <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="handleAvatarChange(event)">
-                
+                <input type="file" id="avatarInput" accept="image/*" style="display: none;"
+                    onchange="handleAvatarChange(event)">
+
                 <div class="form-group">
                     <label class="form-label">姓名 *</label>
                     <input type="text" class="form-input" id="nameInput" required placeholder="请输入姓名">
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">性别</label>
                     <div class="gender-radio">
@@ -667,17 +874,17 @@
                     </div>
                     <input type="hidden" id="genderInput" value="male">
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">年龄</label>
                     <input type="number" class="form-input" id="ageInput" placeholder="请输入年龄" min="0" max="150">
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">生平简介</label>
-                    <textarea class="form-input" id="bioInput" rows="3" placeholder="请输入生平简介（选填）"></textarea>
+                    <textarea class="form-textarea" id="bioInput" rows="3" placeholder="请输入生平简介（选填）"></textarea>
                 </div>
-                
+
                 <button type="submit" class="btn-primary" id="submitBtn">保存</button>
                 <button type="button" class="btn-secondary" onclick="closeModal()">取消</button>
             </form>
@@ -686,72 +893,217 @@
 
     <script>
         // ==================== 全局变量 ====================
+        // 默认族谱数据（包含多级结构）
+        const defaultFamilyData = {
+            id: 'root',
+            name: '梁氏始祖',
+            gender: 'male',
+            age: 88,
+            avatar: '',
+            bio: '梁氏家族始祖，明末清初从北方迁居至此，开基立业，德泽后世。',
+            children: [
+                {
+                    id: 'child1',
+                    name: '梁大公',
+                    gender: 'male',
+                    age: 65,
+                    avatar: '',
+                    bio: '长子，继承家业，广置田产，乐善好施。',
+                    children: [
+                        {
+                            id: 'grandchild1',
+                            name: '梁文远',
+                            gender: 'male',
+                            age: 40,
+                            avatar: '',
+                            bio: '长孙，进士出身，曾任知县。',
+                            children: []
+                        },
+                        {
+                            id: 'grandchild2',
+                            name: '梁文淑',
+                            gender: 'female',
+                            age: 35,
+                            avatar: '',
+                            bio: '孙女，知书达理，嫁入书香门第。',
+                            children: []
+                        }
+                    ]
+                },
+                {
+                    id: 'child2',
+                    name: '梁二公',
+                    gender: 'male',
+                    age: 62,
+                    avatar: '',
+                    bio: '次子，经商致富，开设布庄。',
+                    children: [
+                        {
+                            id: 'grandchild3',
+                            name: '梁明德',
+                            gender: 'male',
+                            age: 38,
+                            avatar: '',
+                            bio: '孙儿，继承祖业，将布庄发扬光大。',
+                            children: []
+                        },
+                        {
+                            id: 'grandchild4',
+                            name: '梁明慧',
+                            gender: 'female',
+                            age: 32,
+                            avatar: '',
+                            bio: '孙女，精通医术，悬壶济世。',
+                            children: []
+                        }
+                    ]
+                },
+                {
+                    id: 'child3',
+                    name: '梁氏长女',
+                    gender: 'female',
+                    age: 60,
+                    avatar: '',
+                    bio: '长女，贤良淑德。',
+                    children: []
+                }
+            ]
+        };
+
+        // 默认重大事件数据（只读）
+        const defaultEvents = [
+            { id: 'event_1', year: '明崇祯十七年、清顺治元年 (1644年)', title: '始祖迁居', description: '梁氏始祖率家族40余人几经辗转，定居于此,开基立业，建立家园。' },
+            { id: 'event_2', year: '年份不详', title: '族谱丢失', description: '族长外迁带走族谱。' },
+            { id: 'event_7', year: '公元2026年', title: '数字化族谱', description: '启动族谱数字化工程，建立家族数据库。' }
+        ];
+
         let familyData = null;
         let currentScale = 1;
         let editingNodeId = null;
         let addingParentId = null;
 
+        // ==================== 侧边栏控制 ====================
+        let sidebarOpen = false;
+
+        function toggleSidebar() {
+            sidebarOpen = !sidebarOpen;
+            const sidebar = document.getElementById('infoSidebar');
+            const mainWrapper = document.getElementById('mainWrapper');
+            if (sidebarOpen) {
+                sidebar.classList.add('open');
+                mainWrapper.classList.add('sidebar-open');
+            } else {
+                sidebar.classList.remove('open');
+                mainWrapper.classList.remove('sidebar-open');
+            }
+        }
+
+        // ==================== 渲染事件时间线 ====================
+        function renderTimeline() {
+            const container = document.getElementById('timelineContainer');
+            if (!container) return;
+
+            container.innerHTML = defaultEvents.map(event => `
+                <div class="timeline-item">
+                    <div class="timeline-year">📅 ${event.year}</div>
+                    <div class="timeline-title">${escapeHtml(event.title)}</div>
+                    <div class="timeline-desc">${escapeHtml(event.description || '')}</div>
+                </div>
+            `).join('');
+        }
+
+        // ==================== 辅助函数 ====================
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'warning' ? '#F56565' : '#48BB78'};
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                z-index: 1001;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                font-size: 14px;
+                animation: slideDown 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.3s';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // ==================== 居中树形图函数 ====================
+        function centerTree() {
+            const treeContainer = document.getElementById('treeContainer');
+            const treeRoot = document.getElementById('treeRoot');
+            
+            if (!treeContainer || !treeRoot) return;
+            
+            setTimeout(() => {
+                const treeWidth = treeRoot.scrollWidth;
+                const containerWidth = treeContainer.clientWidth;
+                
+                if (treeWidth > containerWidth) {
+                    const scrollLeft = (treeWidth - containerWidth) / 2;
+                    treeContainer.scrollLeft = scrollLeft;
+                } else {
+                    treeContainer.scrollLeft = 0;
+                }
+                treeContainer.scrollTop = 20;
+            }, 150);
+        }
+
         // ==================== 数据加载函数 ====================
         async function loadFamilyData() {
             const loadingState = document.getElementById('loadingState');
             const treeRoot = document.getElementById('treeRoot');
-            const controls = document.querySelectorAll('#zoomInBtn, #zoomOutBtn, #resetZoomBtn, #exportBtn');
-            
+            const controls = document.querySelectorAll('#zoomInBtn, #zoomOutBtn, #resetZoomBtn, #exportBtn, #centerBtn');
+
             try {
-                // 模拟加载延迟（可选，让用户看到加载效果）
                 await new Promise(resolve => setTimeout(resolve, 300));
-                
                 const response = await fetch('./familyData.json');
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-                
+
                 familyData = await response.json();
-                
-                // 验证数据结构
+
                 if (!familyData || !familyData.id) {
                     throw new Error('JSON 文件格式不正确，缺少根节点');
                 }
-                
                 console.log('✅ 数据加载成功:', familyData);
-                
-                // 隐藏加载状态，显示树容器和控件
-                loadingState.style.display = 'none';
-                treeRoot.style.display = 'block';
-                controls.forEach(btn => btn.style.display = 'flex');
-                
-                // 渲染树形结构
-                renderTree();
-                updateStats();
-                
+
             } catch (error) {
                 console.error('❌ 加载失败:', error);
-                
-                // 显示错误信息
-                loadingState.innerHTML = `
-                    <div class="error-message">
-                        <div style="font-size: 48px; margin-bottom: 16px;">😔</div>
-                        <p style="font-size: 18px; color: #d32f2f; margin-bottom: 12px;">数据加载失败</p>
-                        <p style="font-size: 14px; color: #666;">${error.message}</p>
-                        <p style="font-size: 12px; color: #999; margin-top: 20px;">
-                            请确保：<br>
-                            1. familyData.json 文件存在于同目录<br>
-                            2. 通过 HTTP 服务器访问（使用 Live Server）<br>
-                            3. JSON 文件格式正确
-                        </p>
-                        <button onclick="location.reload()" style="margin-top: 20px; padding: 8px 20px; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer;">重新加载</button>
-                    </div>
-                `;
-                
-                // 设置默认空数据，避免后续操作报错
-                familyData = {
-                    id: 'root',
-                    name: '数据加载失败',
-                    gender: 'male',
-                    children: []
-                };
+                familyData = JSON.parse(JSON.stringify(defaultFamilyData));
+                showNotification('未找到 familyData.json，已加载示例族谱数据', 'warning');
             }
+
+            loadingState.style.display = 'none';
+            treeRoot.style.display = 'block';
+            controls.forEach(btn => btn.style.display = 'flex');
+
+            renderTree();
+            updateStats();
+            centerTree();
+            
+            // 渲染右侧事件时间线
+            renderTimeline();
         }
 
         // ==================== 渲染函数 ====================
@@ -766,8 +1118,7 @@
 
         function createNodeElement(node) {
             const li = document.createElement('li');
-            
-            // Create node card
+
             const card = document.createElement('div');
             card.className = `node-card ${node.gender || 'male'}`;
             card.onclick = (e) => {
@@ -775,28 +1126,24 @@
                     openEditModal(node.id);
                 }
             };
-            
-            // Avatar
+
             const avatar = document.createElement('img');
             avatar.className = 'node-avatar';
             avatar.src = node.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${node.id}&gender=${node.gender || 'male'}`;
             avatar.alt = node.name;
-            avatar.onerror = function() {
+            avatar.onerror = function () {
                 this.src = `https://api.dicebear.com/7.x/initials/svg?seed=${node.name}`;
             };
-            
-            // Name
+
             const name = document.createElement('div');
             name.className = 'node-name';
             name.textContent = node.name || '未知';
-            
-            // Info
+
             const info = document.createElement('div');
             info.className = 'node-info';
             const genderText = node.gender === 'male' ? '男' : (node.gender === 'female' ? '女' : '未知');
             info.innerHTML = `${genderText} ${node.age ? node.age + '岁' : ''}<br>${node.bio || ''}`;
-            
-            // Actions
+
             const actions = document.createElement('div');
             actions.className = 'node-actions';
             actions.innerHTML = `
@@ -804,14 +1151,13 @@
                 <button class="btn-icon btn-add" onclick="openAddModal('${node.id}')" title="添加子女">➕</button>
                 ${node.id !== 'root' ? `<button class="btn-icon btn-delete" onclick="deleteNode('${node.id}')" title="删除">🗑️</button>` : ''}
             `;
-            
+
             card.appendChild(avatar);
             card.appendChild(name);
             card.appendChild(info);
             card.appendChild(actions);
             li.appendChild(card);
-            
-            // Children
+
             if (node.children && node.children.length > 0) {
                 const ul = document.createElement('ul');
                 node.children.forEach(child => {
@@ -819,7 +1165,7 @@
                 });
                 li.appendChild(ul);
             }
-            
+
             return li;
         }
 
@@ -854,19 +1200,18 @@
         function openEditModal(nodeId) {
             const node = findNode(nodeId);
             if (!node) return;
-            
+
             editingNodeId = nodeId;
             addingParentId = null;
-            
+
             document.getElementById('modalTitle').textContent = '编辑成员';
             document.getElementById('memberId').value = node.id;
             document.getElementById('nameInput').value = node.name || '';
             document.getElementById('ageInput').value = node.age || '';
             document.getElementById('bioInput').value = node.bio || '';
-            
+
             selectGender(node.gender || 'male');
-            
-            // Avatar
+
             const preview = document.getElementById('avatarPreview');
             const placeholder = document.getElementById('avatarPlaceholder');
             if (node.avatar) {
@@ -877,7 +1222,7 @@
                 preview.style.display = 'none';
                 placeholder.style.display = 'flex';
             }
-            
+
             document.getElementById('submitBtn').textContent = '保存修改';
             document.getElementById('modal').classList.add('active');
         }
@@ -885,17 +1230,17 @@
         function openAddModal(parentId) {
             addingParentId = parentId;
             editingNodeId = null;
-            
+
             document.getElementById('modalTitle').textContent = '添加新成员';
             document.getElementById('memberForm').reset();
             document.getElementById('memberId').value = '';
             document.getElementById('parentId').value = parentId;
-            
+
             selectGender('male');
-            
+
             document.getElementById('avatarPreview').style.display = 'none';
             document.getElementById('avatarPlaceholder').style.display = 'flex';
-            
+
             document.getElementById('submitBtn').textContent = '添加成员';
             document.getElementById('modal').classList.add('active');
         }
@@ -923,7 +1268,7 @@
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const preview = document.getElementById('avatarPreview');
                     preview.src = e.target.result;
                     preview.style.display = 'block';
@@ -936,22 +1281,21 @@
         // ==================== 表单提交 ====================
         function handleSubmit(e) {
             e.preventDefault();
-            
+
             const name = document.getElementById('nameInput').value.trim();
             const gender = document.getElementById('genderInput').value;
             const age = document.getElementById('ageInput').value;
             const bio = document.getElementById('bioInput').value.trim();
-            const avatarSrc = document.getElementById('avatarPreview').style.display !== 'none' 
-                ? document.getElementById('avatarPreview').src 
+            const avatarSrc = document.getElementById('avatarPreview').style.display !== 'none'
+                ? document.getElementById('avatarPreview').src
                 : '';
-            
+
             if (!name) {
                 alert('请输入姓名');
                 return;
             }
-            
+
             if (editingNodeId) {
-                // 编辑现有成员
                 const node = findNode(editingNodeId);
                 if (node) {
                     node.name = name;
@@ -963,7 +1307,6 @@
                     }
                 }
             } else if (addingParentId) {
-                // 添加新成员
                 const parent = findNode(addingParentId);
                 if (parent) {
                     if (!parent.children) parent.children = [];
@@ -978,10 +1321,11 @@
                     });
                 }
             }
-            
+
             renderTree();
             updateStats();
             closeModal();
+            centerTree();
         }
 
         // ==================== 删除节点 ====================
@@ -990,39 +1334,40 @@
                 alert('不能删除根节点');
                 return;
             }
-            
+
             if (!confirm('确定要删除该成员及其所有后代吗？此操作不可恢复。')) {
                 return;
             }
-            
+
             const parent = findParent(nodeId);
             if (parent && parent.children) {
                 parent.children = parent.children.filter(child => child.id !== nodeId);
                 renderTree();
                 updateStats();
+                centerTree();
             }
         }
 
         // ==================== 统计更新 ====================
         function updateStats() {
             let total = 0, male = 0, female = 0, generations = 0;
-            
+
             function traverse(node, depth) {
                 if (!node) return;
                 total++;
                 if (node.gender === 'male') male++;
                 else if (node.gender === 'female') female++;
                 generations = Math.max(generations, depth);
-                
+
                 if (node.children) {
                     node.children.forEach(child => traverse(child, depth + 1));
                 }
             }
-            
+
             if (familyData) {
                 traverse(familyData, 1);
             }
-            
+
             document.getElementById('totalCount').textContent = total;
             document.getElementById('maleCount').textContent = male;
             document.getElementById('femaleCount').textContent = female;
@@ -1060,52 +1405,57 @@
                 return;
             }
             const dataStr = JSON.stringify(familyData, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(dataBlob);
             const link = document.createElement('a');
             link.href = url;
             link.download = 'family_tree_backup.json';
             link.click();
             URL.revokeObjectURL(url);
-            alert('数据已导出！');
+            showNotification('族谱数据已导出！', 'success');
         }
 
-        // ==================== 页面初始化（异步方式） ====================
-        document.addEventListener('DOMContentLoaded', async function() {
+        // ==================== 监听窗口大小变化 ====================
+        function handleResize() {
+            centerTree();
+        }
+
+        // ==================== 页面初始化 ====================
+        document.addEventListener('DOMContentLoaded', async function () {
             console.log('📄 DOM 加载完成，开始初始化...');
-            
-            // 绑定表单事件
+
             const form = document.getElementById('memberForm');
             if (form) {
                 form.addEventListener('submit', handleSubmit);
             }
-            
-            // 绑定模态框关闭事件
+
             const modal = document.getElementById('modal');
             if (modal) {
-                modal.addEventListener('click', function(e) {
+                modal.addEventListener('click', function (e) {
                     if (e.target === this) closeModal();
                 });
             }
-            
-            // 绑定缩放按钮
+
             document.getElementById('zoomInBtn')?.addEventListener('click', zoomIn);
             document.getElementById('zoomOutBtn')?.addEventListener('click', zoomOut);
             document.getElementById('resetZoomBtn')?.addEventListener('click', resetZoom);
             document.getElementById('exportBtn')?.addEventListener('click', exportData);
-            
-            // 键盘快捷键
-            document.addEventListener('keydown', function(e) {
+            document.getElementById('centerBtn')?.addEventListener('click', centerTree);
+            document.getElementById('sidebarToggle')?.addEventListener('click', toggleSidebar);
+
+            document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape') {
                     closeModal();
                 }
             });
             
-            // 加载数据（异步）
+            window.addEventListener('resize', handleResize);
+
             await loadFamilyData();
-            
+
             console.log('✅ 应用初始化完成');
         });
     </script>
 </body>
+
 </html>
