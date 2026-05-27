@@ -679,6 +679,8 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .stat-item {
@@ -722,6 +724,46 @@
         @media (max-width: 768px) {
             .tree {
                 padding: 20px 10px;
+                margin-top: 70px;
+            }
+
+            .stats-bar {
+                padding: 12px 16px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .stats-bar>div:first-child {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .stats-bar>div:first-child h1 {
+                font-size: 1.5rem;
+            }
+
+            .stats-bar>div:first-child span {
+                white-space: normal;
+                word-break: break-word;
+                font-size: 11px;
+            }
+
+            .stats-bar .flex {
+                gap: 4px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .stat-item {
+                padding: 0 6px;
+            }
+
+            .stat-value {
+                font-size: 16px;
+            }
+
+            .stat-label {
+                font-size: 9px;
             }
 
             .node-card {
@@ -759,6 +801,7 @@
                 transform: translateX(-50%) translateY(0);
             }
         }
+
         @keyframes alertPulse {
 
             0%,
@@ -787,7 +830,7 @@
     <div class="stats-bar">
         <div class="flex items-center gap-4">
             <h1 class="title-font text-3xl text-amber-900">梁氏族谱</h1>
-            <span class="text-sm hidden sm:inline bg-red-100 px-2 py-0.5 rounded font-medium alert-flash"
+            <span class="text-sm inline bg-red-100 px-2 py-0.5 rounded font-medium alert-flash"
                 style="color: #040000; border: 1px solid #fecaca;">
                 编辑不生效，更新请联系作者（微信号: IrvingLiangcb）
             </span>
@@ -1060,7 +1103,7 @@
             `;
             notification.textContent = message;
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 notification.style.opacity = '0';
                 notification.style.transition = 'opacity 0.3s';
@@ -1072,13 +1115,13 @@
         function centerTree() {
             const treeContainer = document.getElementById('treeContainer');
             const treeRoot = document.getElementById('treeRoot');
-            
+
             if (!treeContainer || !treeRoot) return;
-            
+
             setTimeout(() => {
                 const treeWidth = treeRoot.scrollWidth;
                 const containerWidth = treeContainer.clientWidth;
-                
+
                 if (treeWidth > containerWidth) {
                     const scrollLeft = (treeWidth - containerWidth) / 2;
                     treeContainer.scrollLeft = scrollLeft;
@@ -1123,7 +1166,7 @@
             renderTree();
             updateStats();
             centerTree();
-            
+
             // 渲染右侧事件时间线
             renderTimeline();
         }
@@ -1470,7 +1513,7 @@
                     closeModal();
                 }
             });
-            
+
             window.addEventListener('resize', handleResize);
 
             await loadFamilyData();
