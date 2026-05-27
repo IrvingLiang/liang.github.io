@@ -759,6 +759,25 @@
                 transform: translateX(-50%) translateY(0);
             }
         }
+        @keyframes alertPulse {
+
+            0%,
+            100% {
+                background-color: #fee2e2;
+                /* 浅红色 */
+                box-shadow: 0 0 0px rgba(220, 38, 38, 0);
+            }
+
+            50% {
+                background-color: #fecaca;
+                /* 更深的红色 */
+                box-shadow: 0 0 8px rgba(220, 38, 38, 0.5);
+            }
+        }
+
+        .alert-flash {
+            animation: alertPulse 1.2s ease-in-out infinite;
+        }
     </style>
 </head>
 
@@ -768,7 +787,10 @@
     <div class="stats-bar">
         <div class="flex items-center gap-4">
             <h1 class="title-font text-3xl text-amber-900">梁氏族谱</h1>
-            <span class="text-sm text-gray-500 hidden sm:inline">编辑不生效，更新请联系作者（微信号: IrvingLiangcb）</span>
+            <span class="text-sm hidden sm:inline bg-red-100 px-2 py-0.5 rounded font-medium alert-flash"
+                style="color: #040000; border: 1px solid #fecaca;">
+                编辑不生效，更新请联系作者（微信号: IrvingLiangcb）
+            </span>
         </div>
         <div class="flex">
             <div class="stat-item">
